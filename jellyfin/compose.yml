@@ -8,6 +8,9 @@ services:
       - /home/orin/nas/jellyfin/media:/media
     ports:
       - "8096:8096"
+      - "8920:8920"
+    environment:
+      - JELLYFIN_PublishedServerUrl=https://video.robotfun.ro
     restart: unless-stopped
     user: "${PUID:-1000}:${PGID:-1000}"
 
@@ -20,8 +23,8 @@ services:
       - TZ=Europe/Bucharest
     volumes:
       - /home/orin/nas/radarr/config:/config
-      - /home/orin/nas/downloads:/downloads # Where your download client will save files
-      - /home/orin/nas/jellyfin/media/movies:/movies # Where Radarr will move finished shows
+      - /home/orin/nas/downloads:/downloads
+      - /home/orin/nas/jellyfin/media/movies:/movies
     ports:
       - "7878:7878"
     restart: unless-stopped
@@ -56,7 +59,7 @@ services:
       - TZ=Europe/Bucharest
     volumes:
       - /home/orin/nas/sonarr/config:/config
-      - /home/orin/nas/downloads:/downloads # Ensure this matches qBittorrent's download path
+      - /home/orin/nas/downloads:/downloads
       - /home/orin/nas/jellyfin/media/tv:/tv
     ports:
       - "8989:8989"
@@ -91,4 +94,6 @@ services:
       - PUID=${PUID:-1000}
       - PGID=${PGID:-1000}
       - TZ=Europe/Bucharest
+      - SERVER_PATH=/
+      - PUBLIC_URL=https://audiobooks.robotfun.ro
     restart: unless-stopped
