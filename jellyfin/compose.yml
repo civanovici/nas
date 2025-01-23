@@ -1,0 +1,94 @@
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    volumes:
+      - /home/orin/nas/jellyfin/config:/config
+      - /home/orin/nas/jellyfin/cache:/cache
+      - /home/orin/nas/jellyfin/media:/media
+    ports:
+      - "8096:8096"
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/orin/nas/radarr/config:/config
+      - /home/orin/nas/downloads:/downloads # Where your download client will save files
+      - /home/orin/nas/jellyfin/media/movies:/movies # Where Radarr will move finished shows
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=Europe/Bucharest
+      - WEBUI_PORT=8080
+    volumes:
+      - /home/orin/nas/qbittorrent/config:/config
+      - /home/orin/nas/downloads:/downloads
+      - /home/orin/nas/jellyfin/media/tv:/data/tv
+      - /home/orin/nas/jellyfin/media/movies:/data/movies
+      - /home/orin/nas/jellyfin/media/books:/data/books
+      - /home/orin/nas/jellyfin/media/audiobooks:/data/audiobooks
+    ports:
+      - "8080:8080"
+      - "6881:6881"
+      - "6881:6881/udp"
+    restart: unless-stopped
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/orin/nas/sonarr/config:/config
+      - /home/orin/nas/downloads:/downloads # Ensure this matches qBittorrent's download path
+      - /home/orin/nas/jellyfin/media/tv:/tv
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
+  readarr:
+    image: lscr.io/linuxserver/readarr:develop
+    container_name: readarr
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=Europe/Bucharest
+    volumes:
+      - /home/orin/nas/readarr/config:/config
+      - /home/orin/nas/downloads:/downloads
+      - /home/orin/nas/jellyfin/media/books:/books
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    ports:
+      - "13378:80"
+    volumes:
+      - /home/orin/nas/audiobookshelf/config:/config
+      - /home/orin/nas/audiobookshelf/metadata:/metadata
+      - /home/orin/nas/jellyfin/media/audiobooks:/audiobooks
+    environment:
+      - PUID=${PUID:-1000}
+      - PGID=${PGID:-1000}
+      - TZ=Europe/Bucharest
+    restart: unless-stopped
