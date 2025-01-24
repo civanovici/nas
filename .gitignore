@@ -5,3 +5,5 @@
 **/downloads
 **/media
 **/*.log 
+**/metadata/*
+**/logs/*

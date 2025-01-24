@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  jellyfin:
+    image: jellyfin/jellyfin:latest
+    container_name: jellyfin
+    volumes:
+      - /home/orin/nas/jellyfin/config:/config
+      - /home/orin/nas/jellyfin/cache:/cache
+      - /home/orin/nas/jellyfin/media:/media
+    ports:
+      - "8096:8096"
+    restart: unless-stopped
+    user: "${PUID:-1000}:${PGID:-1000}"
+    devices:
+      - /dev/video0:/dev/video0
+      - /dev/video1:/dev/video1
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+
+      # aKJRxuI4b

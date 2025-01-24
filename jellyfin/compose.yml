@@ -1,4 +1,18 @@
 services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8000:8000"
+    volumes:
+      - /home/orin/nas/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - jellyfin
+      - audiobookshelf
+    restart: unless-stopped
+    networks:
+      - default
+
   jellyfin:
     image: jellyfin/jellyfin:latest
     container_name: jellyfin
@@ -8,11 +22,14 @@ services:
       - /home/orin/nas/jellyfin/media:/media
     ports:
       - "8096:8096"
-      - "8920:8920"
+    expose:
+      - "8096"
     environment:
       - JELLYFIN_PublishedServerUrl=https://video.robotfun.ro
     restart: unless-stopped
     user: "${PUID:-1000}:${PGID:-1000}"
+    networks:
+      - default
 
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -28,6 +45,8 @@ services:
     ports:
       - "7878:7878"
     restart: unless-stopped
+    networks:
+      - default
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
@@ -49,6 +68,8 @@ services:
       - "6881:6881"
       - "6881:6881/udp"
     restart: unless-stopped
+    networks:
+      - default
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
@@ -64,6 +85,8 @@ services:
     ports:
       - "8989:8989"
     restart: unless-stopped
+    networks:
+      - default
 
   readarr:
     image: lscr.io/linuxserver/readarr:develop
@@ -80,12 +103,16 @@ services:
       - "8787:8787"
     restart: unless-stopped
     user: "${PUID:-1000}:${PGID:-1000}"
+    networks:
+      - default
 
   audiobookshelf:
     image: ghcr.io/advplyr/audiobookshelf:latest
     container_name: audiobookshelf
     ports:
       - "13378:80"
+    expose:
+      - "80"
     volumes:
       - /home/orin/nas/audiobookshelf/config:/config
       - /home/orin/nas/audiobookshelf/metadata:/metadata
@@ -97,3 +124,9 @@ services:
       - SERVER_PATH=/
       - PUBLIC_URL=https://audiobooks.robotfun.ro
     restart: unless-stopped
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge
