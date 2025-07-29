@@ -4,14 +4,14 @@
 
 We have two servers in our network:
 
-### Main Server (192.168.0.125)
+### Main Server (192.168.0.xxx)
 - Primary domain: robotfun.ro
 - Running Nginx for AI API services
 - Port forwarding from router:
-  - Port 8085 → 192.168.0.125:8085
-  - Port 443 → 192.168.0.125:443
+  - Port 8085 → 192.168.0.xxx:8085
+  - Port 443 → 192.168.0.xxx:443
 
-### Media Server (192.168.0.122)
+### Media Server (192.168.0.xxx)
 - Running multiple Docker containers:
   - Jellyfin (Media streaming)
   - Audiobookshelf (Audiobook server)
@@ -21,7 +21,7 @@ We have two servers in our network:
   - qBittorrent (Download client)
 - Local Nginx reverse proxy for handling external access
 - Port forwarding from router:
-  - Port 8000 → 192.168.0.122:8000 (Nginx reverse proxy)
+  - Port 8000 → 192.168.0.xxx:8000 (Nginx reverse proxy)
   - Port 80 reserved for other services
 
 ## Current Setup
@@ -29,9 +29,9 @@ We have two servers in our network:
 ```mermaid
 graph TD
     Internet --> Cloudflare
-    Cloudflare -->|HTTPS| Router[Router 86.125.230.236]
-    Router -->|Port 8085, 443| MainServer[Main Server 192.168.0.125]
-    Router -->|Port 8000| MediaServer[Media Server 192.168.0.122]
+    Cloudflare -->|HTTPS| Router[Router 86.125.230.xxx]
+    Router -->|Port 8085, 443| MainServer[Main Server 192.168.0.xxx]
+    Router -->|Port 8000| MediaServer[Media Server 192.168.0.xxx]
     
     subgraph MainServer
         MainNginx[Nginx] --> AI_API
@@ -46,7 +46,7 @@ graph TD
 
 ## Port Configuration
 
-### Media Server (192.168.0.122)
+### Media Server (192.168.0.xxx)
 - Nginx Reverse Proxy: 8000 (external access)
 - Internal Services:
   - Jellyfin: 8096
@@ -58,7 +58,7 @@ graph TD
 
 ## Domain Configuration
 
-- Main domain: robotfun.ro → 192.168.0.125
+- Main domain: robotfun.ro → 192.168.0.xxx
 - Media subdomains (through Nginx on port 8000):
   - video.robotfun.ro → Jellyfin
   - audiobooks.robotfun.ro → Audiobookshelf
@@ -70,7 +70,7 @@ graph TD
    sequenceDiagram
        User->>Cloudflare: HTTPS request (443)
        Cloudflare->>Router: HTTP request (8000)
-       Router->>MediaServer: Forward to 192.168.0.122:8000
+       Router->>MediaServer: Forward to 192.168.0.xxx:8000
        MediaServer->>Service: Internal routing
    ```
 
@@ -85,9 +85,9 @@ graph TD
 
 - Free tier account
 - DNS Records:
-  - A record: robotfun.ro → 86.125.230.236
-  - A record: video.robotfun.ro → 86.125.230.236
-  - A record: audiobooks.robotfun.ro → 86.125.230.236
+  - A record: robotfun.ro → 86.125.230.xxx
+  - A record: video.robotfun.ro → 86.125.230.xxx
+  - A record: audiobooks.robotfun.ro → 86.125.230.xxx
 - SSL/TLS: Flexible mode
   - HTTPS between users and Cloudflare
   - HTTP between Cloudflare and origin
